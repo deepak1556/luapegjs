@@ -2,7 +2,9 @@
   "name": "luapegjs",
   "version": "0.0.0",
   "description": "lua parser with pegjs",
-  "main": "index.js",
+  "bin": {
+    "luapegjs": "bin/cmd.js"
+  },
   "directories": {
     "example": "examples",
     "test": "test"
