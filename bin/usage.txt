@@ -1,0 +1,16 @@
+usage: luapegjs OPTIONS
+
+OPTIONS are:
+
+  -t, --ast
+
+    Print AST to stdout
+
+  -c, --compress
+
+    Minify the JS ouput using uglify-js
+
+  -o FILE, --output FILE
+
+    Print generated JS data to FILE. USE "@2" for stderr and 
+    "@1" or "-" for stdout.
