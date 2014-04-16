@@ -1,4 +1,4 @@
-BIN = ./node_modules/.bin/
+BIN = $(npm)
 NODE ?= node
 SRC = $(wildcard examples/*.lua)
 EX = $(SRC:examples/%.lua=build/%.js)
