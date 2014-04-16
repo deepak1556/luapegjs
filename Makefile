@@ -1,13 +1,16 @@
 BIN = ./node_modules/.bin/
 NODE ?= node
-TEST = $(shell find test -name "*.js")
+SRC = $(wildcard examples/*.lua)
+EX = $(SRC:examples/%.lua=build/%.js)
 
 build:
 	@mkdir -p build
 	@$(BIN)pegjs src/grammar.pegjs build/grammar.js
 
-test:
-	@$(NODE) $(TEST)
+examples: $(EX)
+
+build/%.js: examples/%.lua
+	@$(NODE) bin/cmd.js $< > $@	
 
 clean:
 	@rm -rf build
