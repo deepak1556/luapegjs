@@ -41,4 +41,5 @@ make examples
 * `+`, `-`, `*`, `/`, `=`, `>=`, `<=`, `!=`, `>`, `<`
 *  `local`
 *  `--` comments
+*  `if else` statment
 *  `function` partial done
