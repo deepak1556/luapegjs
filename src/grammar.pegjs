@@ -726,7 +726,13 @@ Statement
   / IfStatement
 
 Block
-  = "then" __ body:(StatementList __)? "end" {
+  = "then" __ body:(StatementList __)? "else" {
+      return {
+        type: "BlockStatement",
+        body: optionalList(extractOptional(body, 0))
+      };
+    }
+  / "then" __ body:(StatementList __)? "end" {
       return {
         type: "BlockStatement",
         body: optionalList(extractOptional(body, 0))
@@ -793,14 +799,13 @@ ExpressionStatement
 IfStatement
   = IfToken __ "(" __ test:Expression __ ")" __
     consequent:Statement __
-    ElseToken __
-    alternate:Statement
+    _ __ body:FunctionBody __ "end"
     {
       return {
         type:       "IfStatement",
         test:       test,
         consequent: consequent,
-        alternate:  alternate
+        alternate:  body
       };
     }
   / IfToken __ "(" __ test:Expression __ ")" __
@@ -810,6 +815,45 @@ IfStatement
         test:       test,
         consequent: consequent,
         alternate:  null
+      };
+    }
+
+FunctionDeclaration
+  = FunctionToken __ id:Identifier __
+    "(" __ params:(FormalParameterList __)? ")" __
+    _ __ body:FunctionBody __ "end"
+    {
+      return {
+        type:   "FunctionDeclaration",
+        id:     id,
+        params: optionalList(extractOptional(params, 0)),
+        body:   body
+      };
+    }
+
+FunctionExpression
+  = FunctionToken __ id:(Identifier __)?
+    "(" __ params:(FormalParameterList __)? ")" __
+    _ __ body:FunctionBody __ "end"
+    {
+      return {
+        type:   "FunctionExpression",
+        id:     extractOptional(id, 0),
+        params: optionalList(extractOptional(params, 0)),
+        body:   body
+      };
+    }
+
+FormalParameterList
+  = first:Identifier rest:(__ "," __ Identifier)* {
+      return buildList(first, rest, 3);
+    }
+
+FunctionBody
+  = body:SourceElements? {
+      return {
+        type: "BlockStatement",
+        body: optionalList(body)
       };
     }
 
@@ -830,3 +874,4 @@ SourceElements
 
 SourceElement
   = Statement
+  / FunctionDeclaration
