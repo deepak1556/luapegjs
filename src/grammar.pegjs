@@ -166,6 +166,7 @@ Keyword
   / ReturnToken
   / VarToken
   / WhileToken
+  / EndToken
 
 Literal
   = NullLiteral
@@ -401,6 +402,7 @@ ReturnToken     = "return"     !IdentifierPart
 TrueToken       = "true"       !IdentifierPart
 VarToken        = "local"      !IdentifierPart
 WhileToken      = "while"      !IdentifierPart
+EndToken        = "end"        !IdentifierPart
 
 /* Skipped */
 
@@ -721,9 +723,10 @@ Statement
   / VariableStatement
   / EmptyStatement
   / ExpressionStatement
+  / IfStatement
 
 Block
-  = "{" __ body:(StatementList __)? "}" {
+  = "then" __ body:(StatementList __)? "end" {
       return {
         type: "BlockStatement",
         body: optionalList(extractOptional(body, 0))
@@ -780,10 +783,33 @@ EmptyStatement
   = ";" { return { type: "EmptyStatement" }; }
 
 ExpressionStatement
-  = !("{" / FunctionToken) expression:Expression EOS {
+  = !("then" / FunctionToken) expression:Expression EOS {
       return {
         type:       "ExpressionStatement",
         expression: expression
+      };
+    }
+
+IfStatement
+  = IfToken __ "(" __ test:Expression __ ")" __
+    consequent:Statement __
+    ElseToken __
+    alternate:Statement
+    {
+      return {
+        type:       "IfStatement",
+        test:       test,
+        consequent: consequent,
+        alternate:  alternate
+      };
+    }
+  / IfToken __ "(" __ test:Expression __ ")" __
+    consequent:Statement {
+      return {
+        type:       "IfStatement",
+        test:       test,
+        consequent: consequent,
+        alternate:  null
       };
     }
 
