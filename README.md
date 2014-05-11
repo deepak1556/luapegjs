@@ -42,4 +42,6 @@ make examples
 *  `local`
 *  `--` comments
 *  `if else` statment
+*  `while repeat for` loops
+*  `{}` array
 *  `function` partial done
