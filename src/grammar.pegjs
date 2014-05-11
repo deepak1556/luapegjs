@@ -167,6 +167,8 @@ Keyword
   / VarToken
   / WhileToken
   / EndToken
+  / RepeatToken
+  / UntilToken
 
 Literal
   = NullLiteral
@@ -403,6 +405,8 @@ TrueToken       = "true"       !IdentifierPart
 VarToken        = "local"      !IdentifierPart
 WhileToken      = "while"      !IdentifierPart
 EndToken        = "end"        !IdentifierPart
+RepeatToken     = "repeat"     !IdentifierPart
+UntilToken      = "until"      !IdentifierPart
 
 /* Skipped */
 
@@ -724,9 +728,16 @@ Statement
   / EmptyStatement
   / ExpressionStatement
   / IfStatement
+  / IterationStatement
 
 Block
-  = "then" __ body:(StatementList __)? "else" {
+  = "do" __ body:(StatementList __)? "end" {
+      return {
+        type: "BlockStatement",
+        body: optionalList(extractOptional(body, 0))
+      };
+    }
+  / "then" __ body:(StatementList __)? "else" {
       return {
         type: "BlockStatement",
         body: optionalList(extractOptional(body, 0))
@@ -737,7 +748,7 @@ Block
         type: "BlockStatement",
         body: optionalList(extractOptional(body, 0))
       };
-    }
+    }   
 
 StatementList
   = first:Statement rest:(__ Statement)* { return buildList(first, rest, 1); }
@@ -817,6 +828,47 @@ IfStatement
         alternate:  null
       };
     }
+
+IterationStatement
+  = RepeatToken __
+    _ __ body:Statement __ "until"
+    __ test:Expression __ EOS
+    { return { type: "DoWhileStatement", body: body, test: test }; }
+  / WhileToken __ test:Expression __
+    body:Statement
+    { return { type: "WhileStatement", test: test, body: body }; }
+  / ForToken __
+    init:(ExpressionNoIn __)? "," __
+    test:(Expression __)? "," __
+    update:(Expression __)?
+    body:Statement
+    {
+      return {
+        type:   "ForStatement",
+        init:   extractOptional(init, 0),
+        test:   extractOptional(test, 0),
+        update: extractOptional(update, 0),
+        body:   body
+      };
+    }
+  / ForToken __
+    VarToken __ declarations:VariableDeclarationListNoIn __ "," __
+    test:(Expression __)? "," __
+    update:(Expression __)?
+    body:Statement
+    {
+      return {
+        type:   "ForStatement",
+        init:   {
+          type:         "VariableDeclaration",
+          declarations: declarations
+        },
+        test:   extractOptional(test, 0),
+        update: extractOptional(update, 0),
+        body:   body
+      };
+    }
+
 
 FunctionDeclaration
   = FunctionToken __ id:Identifier __
