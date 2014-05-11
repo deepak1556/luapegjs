@@ -432,7 +432,28 @@ EOF
 PrimaryExpression
   = Identifier
   / Literal
+  / ArrayLiteral
   / "(" __ expression:Expression __ ")" { return expression; }
+
+ArrayLiteral
+  = "{" __ elision:(Elision __)? "}" {
+      return {
+        type:     "ArrayExpression",
+        elements: optionalList(extractOptional(elision, 0))
+      };
+    }
+  / "{" __ elements:ElementList __ "}" {
+      return {
+        type:     "ArrayExpression",
+        elements: elements
+      };
+    }
+  / "{" __ elements:ElementList __ "," __ elision:(Elision __)? "}" {
+      return {
+        type:     "ArrayExpression",
+        elements: elements.concat(optionalList(extractOptional(elision, 0)))
+      };
+    }
 
 ElementList
   = first:(
