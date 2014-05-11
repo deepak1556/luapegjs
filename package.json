@@ -1,6 +1,6 @@
 {
   "name": "luapegjs",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "lua parser with pegjs",
   "bin": {
     "luapegjs": "bin/cmd.js"
