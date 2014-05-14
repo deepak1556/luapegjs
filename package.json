@@ -2,6 +2,7 @@
   "name": "luapegjs",
   "version": "0.2.0",
   "description": "lua parser with pegjs",
+  "main": "build/grammar.js",
   "bin": {
     "luapegjs": "bin/cmd.js"
   },
