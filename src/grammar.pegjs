@@ -169,6 +169,7 @@ Keyword
   / EndToken
   / RepeatToken
   / UntilToken
+  / RepeatToken
 
 Literal
   = NullLiteral
@@ -407,6 +408,7 @@ WhileToken      = "while"      !IdentifierPart
 EndToken        = "end"        !IdentifierPart
 RepeatToken     = "repeat"     !IdentifierPart
 UntilToken      = "until"      !IdentifierPart
+ReturnToken     = "return"     !IdentifierPart
 
 /* Skipped */
 
@@ -750,6 +752,7 @@ Statement
   / ExpressionStatement
   / IfStatement
   / IterationStatement
+  / ReturnStatement
 
 Block
   = "do" __ body:(StatementList __)? "end" {
@@ -889,6 +892,14 @@ IterationStatement
         body:   body
       };
     }
+
+ReturnStatement
+  = ReturnToken EOS {
+      return { type: "ReturnStatement", argument: null };
+    }
+  / ReturnToken _ argument:Expression EOS {
+      return { type: "ReturnStatement", argument: argument };
+    }    
 
 
 FunctionDeclaration
