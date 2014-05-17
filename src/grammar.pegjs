@@ -434,6 +434,7 @@ EOF
 PrimaryExpression
   = Identifier
   / Literal
+  / ObjectLiteral
   / ArrayLiteral
   / "(" __ expression:Expression __ ")" { return expression; }
 
@@ -471,7 +472,48 @@ ElementList
     { return Array.prototype.concat.apply(first, rest); }
 
 Elision
-  = "," commas:(__ ",")* { return filledArray(commas.length + 1, null); }
+  = "," commas:(__ ",")* { return filledArray(commas.length + 1, null); }    
+
+ObjectLiteral
+  = "{" __ properties:PropertyNameAndValueList __ "}" {
+       return { type: "ObjectExpression", properties: properties };
+     }
+  / "{" __ properties:PropertyNameAndValueList __ "," __ "}" {
+       return { type: "ObjectExpression", properties: properties };
+     }
+
+PropertyNameAndValueList
+  = first:PropertyAssignment rest:(__ "," __ PropertyAssignment)* {
+      return buildList(first, rest, 3);
+    }
+
+PropertyAssignment
+  = key:PropertyName __ "=" __ value:AssignmentExpression {
+      return { key: key, value: value, kind: "init" };
+    }
+  / key:PropertyName __ "=" __ FunctionToken __ "(" __ params:(FormalParameterList __)? ")" __
+    __ body:FunctionBody __ "end"
+    {
+      return {
+        key:   key,
+        value: {
+          type:   "FunctionExpression",
+          id:     null,
+          params: optionalList(extractOptional(params, 0)),
+          body:   body,
+          rest: null
+        },
+        kind:  "init"
+      };
+    }    
+
+PropertyName
+  = IdentifierName
+  / StringLiteral
+  / NumericLiteral
+
+PropertySetParameterList
+  = id:Identifier { return [id]; }
 
 MemberExpression
   = first:(
