@@ -44,4 +44,5 @@ make examples
 *  `if else` statment
 *  `while repeat for` loops
 *  `{}` array
-*  `function` partial done
+*  `function`
+*  `{x=1}` tables
