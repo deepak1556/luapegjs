@@ -10,7 +10,7 @@ build:
 examples: $(EX)
 
 build/%.js: examples/%.lua
-	@$(NODE) bin/cmd.js $< > $@	
+	@$(NODE) bin/cmd.js $< -o $@	
 
 clean:
 	@rm -rf build
