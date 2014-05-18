@@ -1,7 +1,7 @@
 luapegjs
 ========
-
-Lua2Js [WIP] . It uses [Peg.js](https://github.com/dmajda/pegjs) to generate Mozilla parser compatible AST which is transformed to JS via [escodegen](https://github.com/Constellation/escodegen)
+Lua2Js [WIP] . It uses [Peg.js](https://github.com/dmajda/pegjs) to generate Mozilla parser compatible AST which is transformed to JS via [escodegen](https://github.com/Constellation/escodegen) 
+[![Build Status](https://drone.io/github.com/deepak1556/luapegjs/status.png)](https://drone.io/github.com/deepak1556/luapegjs/latest)
 
 ## Usage
 
