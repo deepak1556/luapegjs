@@ -5,4 +5,7 @@ function max (a,b)
   else
   	max = a;
   end
+  return max
 end
+
+a = max(1, 2)

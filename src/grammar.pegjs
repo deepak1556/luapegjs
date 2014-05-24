@@ -1,6 +1,7 @@
 {
   var TYPES_TO_PROPERTY_NAMES = {
-    MemberExpression: "object",
+    CallExpression: "callee",
+    MemberExpression: "object"
   };
 
   function filledArray(count, value) {
@@ -170,6 +171,8 @@ Keyword
   / RepeatToken
   / UntilToken
   / RepeatToken
+  / NewToken
+  / ThisToken
 
 Literal
   = NullLiteral
@@ -409,6 +412,8 @@ EndToken        = "end"        !IdentifierPart
 RepeatToken     = "repeat"     !IdentifierPart
 UntilToken      = "until"      !IdentifierPart
 ReturnToken     = "return"     !IdentifierPart
+NewToken        = "new"        !IdentifierPart
+ThisToken       = "self"       !IdentifierPart
 
 /* Skipped */
 
@@ -432,7 +437,8 @@ EOF
 /* ----- 2. Expressions ----- */
 
 PrimaryExpression
-  = Identifier
+  = ThisToken { return { type: "ThisExpression" }; }
+  / Identifier
   / Literal
   / ObjectLiteral
   / ArrayLiteral
@@ -518,6 +524,7 @@ PropertySetParameterList
 MemberExpression
   = first:(
         PrimaryExpression
+      / FunctionExpression
     )
     rest:(
         __ "[" __ property:Expression __ "]" {
@@ -538,11 +545,52 @@ MemberExpression
       });
     }
 
-NewExpression
-  = MemberExpression
+Arguments
+  = "(" __ args:(ArgumentList __)? ")" {
+      return optionalList(extractOptional(args, 0));
+    }
+
+ArgumentList
+  = first:AssignmentExpression rest:(__ "," __ AssignmentExpression)* {
+      return buildList(first, rest, 3);
+    }
+
+CallExpression
+  = first:(
+      callee:MemberExpression __ args:Arguments {
+        return { type: "CallExpression", callee: callee, arguments: args };
+      }       
+    )
+    rest:(
+        __ args:Arguments {
+          return { type: "CallExpression", arguments: args };
+        }
+      / __ "[" __ property:Expression __ "]" {
+          return {
+            type:     "MemberExpression",
+            property: property,
+            computed: true
+          };
+        }
+      / __ "." __ property:IdentifierName {
+          return {
+            type:     "MemberExpression",
+            property: property,
+            computed: false
+          };
+        }
+    )*
+    {
+      return buildTree(first, rest, function(result, element) {
+        element[TYPES_TO_PROPERTY_NAMES[element.type]] = result;
+
+        return element;
+      });
+    }
 
 LeftHandSideExpression
-  = NewExpression
+  = CallExpression
+  / MemberExpression
 
 PostfixExpression
   = argument:LeftHandSideExpression _ operator:PostfixOperator {
