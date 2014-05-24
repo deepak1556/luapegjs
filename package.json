@@ -1,6 +1,6 @@
 {
   "name": "luapegjs",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "lua parser with pegjs",
   "main": "build/grammar.js",
   "bin": {
