@@ -11,7 +11,8 @@
     "test": "test"
   },
   "scripts": {
-    "test": "make test"
+    "test": "make test",
+    "postinstall": "make clean build"
   },
   "repository": {
     "type": "git",
