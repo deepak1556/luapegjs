@@ -11,8 +11,7 @@
     "test": "test"
   },
   "scripts": {
-    "test": "make test",
-    "prepublish": "make clean build"
+    "test": "make test"
   },
   "repository": {
     "type": "git",
