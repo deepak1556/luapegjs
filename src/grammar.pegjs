@@ -922,7 +922,7 @@ ExpressionStatement
     }
 
 IfStatement
-  = IfToken __ "(" __ test:Expression __ ")" __
+  = IfToken __ test:Expression __
     consequent:Statement __
     _ __ body:FunctionBody __ "end"
     {
@@ -933,7 +933,7 @@ IfStatement
         alternate:  body
       };
     }
-  / IfToken __ "(" __ test:Expression __ ")" __
+  / IfToken __ test:Expression __
     consequent:Statement {
       return {
         type:       "IfStatement",
